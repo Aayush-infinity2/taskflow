@@ -1,0 +1,243 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TaskFlow Pro</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <nav class="app-nav">
+        <div class="brand-lockup">
+            <span class="brand-mark"><i class="bi bi-check2-square"></i></span>
+            <div>
+                <div class="brand-name">TaskFlow Pro</div>
+                <div class="brand-subtitle">Tasks, priorities, deadlines</div>
+            </div>
+        </div>
+        <div class="nav-actions">
+            <span class="task-pill"><span id="taskCount">0</span> tasks</span>
+            <button class="icon-btn" onclick="toggleTheme()" aria-label="Toggle theme" title="Toggle theme">
+                <i class="bi bi-moon-stars" id="themeIcon"></i>
+            </button>
+        </div>
+    </nav>
+
+    <main class="app-shell">
+        <aside class="side-panel">
+            <section class="panel-block">
+                <div class="section-title">
+                    <span>Overview</span>
+                    <i class="bi bi-activity"></i>
+                </div>
+                <div class="stat-grid">
+                    <div class="stat-tile">
+                        <small>Total</small>
+                        <strong id="statTotal">0</strong>
+                    </div>
+                    <div class="stat-tile success">
+                        <small>Done</small>
+                        <strong id="statCompleted">0</strong>
+                    </div>
+                    <div class="stat-tile warning">
+                        <small>Pending</small>
+                        <strong id="statPending">0</strong>
+                    </div>
+                    <div class="stat-tile danger">
+                        <small>High</small>
+                        <strong id="statHigh">0</strong>
+                    </div>
+                </div>
+            </section>
+
+            <section class="panel-block">
+                <div class="section-title">
+                    <span>Filters</span>
+                    <i class="bi bi-funnel"></i>
+                </div>
+                <div class="filter-stack">
+                    <div>
+                        <label class="form-label">Status</label>
+                        <div class="segmented-control" role="group" aria-label="Status filter">
+                            <input type="radio" class="btn-check" name="status" id="statusAll" value="all" checked>
+                            <label for="statusAll">All</label>
+                            <input type="radio" class="btn-check" name="status" id="statusActive" value="pending">
+                            <label for="statusActive">Active</label>
+                            <input type="radio" class="btn-check" name="status" id="statusDone" value="completed">
+                            <label for="statusDone">Done</label>
+                        </div>
+                    </div>
+
+                    <div>
+                        <label class="form-label" for="priorityFilter">Priority</label>
+                        <select id="priorityFilter" class="form-select">
+                            <option value="">All priorities</option>
+                            <option value="high">High</option>
+                            <option value="medium">Medium</option>
+                            <option value="low">Low</option>
+                        </select>
+                    </div>
+
+                    <div>
+                        <label class="form-label" for="categoryFilter">Category</label>
+                        <select id="categoryFilter" class="form-select">
+                            <option value="">All categories</option>
+                        </select>
+                    </div>
+
+                    <button class="btn btn-soft w-100" onclick="resetFilters()">
+                        <i class="bi bi-arrow-counterclockwise"></i>
+                        Reset filters
+                    </button>
+                </div>
+            </section>
+        </aside>
+
+        <section class="workspace">
+            <div class="workspace-header">
+                <div>
+                    <p class="eyebrow">Workspace</p>
+                    <h1>Today’s tasks</h1>
+                </div>
+                <div class="search-box">
+                    <i class="bi bi-search"></i>
+                    <input type="text" id="searchInput" placeholder="Search tasks">
+                </div>
+            </div>
+
+            <section class="create-panel">
+                <form id="addTaskForm">
+                    <div class="create-grid">
+                        <div class="field-span-2">
+                            <label class="form-label" for="taskInput">Task title</label>
+                            <input type="text" id="taskInput" class="form-control" placeholder="Prepare project demo" required>
+                        </div>
+                        <div>
+                            <label class="form-label" for="priorityInput">Priority</label>
+                            <select id="priorityInput" class="form-select">
+                                <option value="low">Low</option>
+                                <option value="medium" selected>Medium</option>
+                                <option value="high">High</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="form-label" for="categoryInput">Category</label>
+                            <select id="categoryInput" class="form-select">
+                                <option value="work">Work</option>
+                                <option value="personal">Personal</option>
+                                <option value="shopping">Shopping</option>
+                                <option value="health">Health</option>
+                                <option value="other">Other</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="form-label" for="dueDateInput">Due date</label>
+                            <input type="date" id="dueDateInput" class="form-control">
+                        </div>
+                        <div class="field-span-2">
+                            <label class="form-label" for="descriptionInput">Description</label>
+                            <textarea id="descriptionInput" class="form-control" rows="2" placeholder="Add details"></textarea>
+                        </div>
+                        <div class="submit-cell">
+                            <button type="submit" class="btn btn-primary w-100">
+                                <i class="bi bi-plus-lg"></i>
+                                Add task
+                            </button>
+                        </div>
+                    </div>
+                </form>
+            </section>
+
+            <section id="taskContainer" class="task-list">
+                <div class="empty-state">
+                    <i class="bi bi-inbox"></i>
+                    <p>No tasks yet.</p>
+                </div>
+            </section>
+        </section>
+    </main>
+
+    <div class="modal fade" id="editModal" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Edit task</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="editTaskForm">
+                        <div class="mb-3">
+                            <label class="form-label" for="editTitle">Title</label>
+                            <input type="text" id="editTitle" class="form-control" required>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label" for="editDescription">Description</label>
+                            <textarea id="editDescription" class="form-control" rows="3"></textarea>
+                        </div>
+                        <div class="row g-3">
+                            <div class="col-md-6">
+                                <label class="form-label" for="editPriority">Priority</label>
+                                <select id="editPriority" class="form-select">
+                                    <option value="low">Low</option>
+                                    <option value="medium">Medium</option>
+                                    <option value="high">High</option>
+                                </select>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label" for="editCategory">Category</label>
+                                <select id="editCategory" class="form-select">
+                                    <option value="work">Work</option>
+                                    <option value="personal">Personal</option>
+                                    <option value="shopping">Shopping</option>
+                                    <option value="health">Health</option>
+                                    <option value="other">Other</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="mt-3">
+                            <label class="form-label" for="editDueDate">Due date</label>
+                            <input type="date" id="editDueDate" class="form-control">
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-soft" data-bs-dismiss="modal">Cancel</button>
+                    <button type="button" class="btn btn-primary" onclick="saveEditedTask()">Save changes</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal fade" id="deleteModal" tabindex="-1">
+        <div class="modal-dialog modal-sm">
+            <div class="modal-content">
+                <div class="modal-header danger-header">
+                    <h5 class="modal-title">Delete task</h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <p class="mb-0">Are you sure you want to delete this task?</p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-soft" data-bs-dismiss="modal">Cancel</button>
+                    <button type="button" class="btn btn-danger" onclick="confirmDelete()">Delete</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="toast-container position-fixed bottom-0 end-0 p-3">
+        <div id="appToast" class="toast align-items-center border-0" role="status" aria-live="polite" aria-atomic="true">
+            <div class="d-flex">
+                <div class="toast-body" id="toastMessage"></div>
+                <button type="button" class="btn-close me-2 m-auto" data-bs-dismiss="toast"></button>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="script.js"></script>
+</body>
+</html>
